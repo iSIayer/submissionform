@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { FormInput } from "./components/FormInput/FormInput.jsx";
+import { DataTable } from "./components/DataTable/DataTable.jsx"; // Импортируйте компонент DataTable
+import { inputs } from "./inputs/inputs.js";
+import "./App.css";
 
-function App() {
+export const App = () => {
+  const [values, setValues] = useState({
+    username: "",
+    id: "",
+    department: "",
+    employment_status: "",
+    email: "",
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = { ...values };
+
+    const savedData = JSON.parse(localStorage.getItem("formData")) || [];
+    savedData.push(formData);
+    localStorage.setItem("formData", JSON.stringify(savedData));
+    setValues({
+      username: "",
+      id: "",
+      department: "",
+      employment_status: "",
+      email: "",
+    });
+  };
+
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <form onSubmit={handleSubmit}>
+        <h1>Submission Form</h1>
+        {inputs.map((input) => (
+          <FormInput
+            key={input.id}
+            {...input}
+            value={values[input.name]}
+            onChange={onChange}
+          />
+        ))}
+        <button>Submit</button>
+      </form>
+      <DataTable />
     </div>
   );
-}
-
-export default App;
+};
